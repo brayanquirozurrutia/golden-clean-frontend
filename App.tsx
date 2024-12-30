@@ -1,11 +1,22 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import AppNavigator from './src/navigation/AppNavigator';
+import { Provider as PaperProvider } from 'react-native-paper';
+import AppNavigator from '@/navigation/AppNavigator';
+import { DefaultTheme as PaperTheme } from 'react-native-paper';
+import { DefaultTheme as NavigationTheme } from '@react-navigation/native';
+import merge from 'deepmerge';
 
-export default function App() {
-  return (
-      <NavigationContainer>
-        <AppNavigator />
-      </NavigationContainer>
-  );
-}
+// Merge themes for Paper and Navigation
+const CombinedTheme = merge(NavigationTheme, PaperTheme);
+
+const App = () => {
+    return (
+        <PaperProvider theme={CombinedTheme}>
+            <NavigationContainer theme={CombinedTheme}>
+                <AppNavigator />
+            </NavigationContainer>
+        </PaperProvider>
+    );
+};
+
+export default App;
