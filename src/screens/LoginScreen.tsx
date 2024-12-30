@@ -19,8 +19,29 @@ const LoginScreen = () => {
     const [password, setPassword] = useState('');
     const [secureTextEntry, setSecureTextEntry] = useState(true); // Password visibility
     const { login, loading, error } = useAuth();
+    const [localError, setLocalError] = useState<string | null>(null);
 
+    /**
+     * Handles the login action with validation.
+     */
     const handleLogin = () => {
+        const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
+        const passwordRegex = /^[A-Za-z0-9@#$%^&+=]{8,}$/;
+
+        // Validate username (email format)
+        if (!emailRegex.test(username)) {
+            setLocalError('Invalid email format');
+            return;
+        }
+
+        // Validate password (secure format)
+        if (!passwordRegex.test(password)) {
+            setLocalError('Password must be at least 8 characters and include valid symbols');
+            return;
+        }
+
+        // Clear local errors and call the login hook
+        setLocalError(null);
         login(username, password).then(r => r);
     };
 
@@ -57,7 +78,10 @@ const LoginScreen = () => {
                     onRightIconPress={() => setSecureTextEntry(!secureTextEntry)}
                 />
 
-                {error && <Text style={styles.errorText}>{error}</Text>}
+                {/* Error Messages */}
+                {(localError || error) && (
+                    <Text style={styles.errorText}>{localError || error}</Text>
+                )}
 
                 <Button
                     mode="contained"

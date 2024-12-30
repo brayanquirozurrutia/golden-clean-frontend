@@ -45,7 +45,7 @@ const useAuth = () => {
                 setError('Unknown role');
             }
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'An error occurred');
+            setError(err.message);
         } finally {
             setLoading(false);
         }
