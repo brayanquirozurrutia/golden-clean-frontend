@@ -1,51 +1,52 @@
 import React from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Text, Card, Button } from 'react-native-paper';
 import useEmployeeDashboard from '@/hooks/useEmployeeDashboard';
 
 /**
  * EmployeeDashboard component.
- * @constructor
  */
 const EmployeeDashboard = () => {
-    const { services, acceptService } = useEmployeeDashboard();
+    const { activeService, countdown, acceptService } = useEmployeeDashboard();
 
     /**
      * Render a service card.
-     * @param item - Service item.
      * @returns The service card.
      */
-    const renderService = (
-        { item }: { item: { service_id: number; description: string } }
-    ) => (
-        <Card style={styles.card}>
-            <Card.Content>
-                <Text style={styles.description}>{item.description}</Text>
-            </Card.Content>
-            <Card.Actions>
-                <Button
-                    mode="contained"
-                    onPress={() => acceptService(item.service_id)}
-                    style={styles.acceptButton}
-                >
-                    Accept
-                </Button>
-            </Card.Actions>
-        </Card>
-    );
+    const renderActiveService = () => {
+        if (!activeService) {
+            return (
+                <Text style={styles.noServicesText}>No services available.</Text>
+            );
+        }
+
+        return (
+            <Card style={styles.card}>
+                <Card.Content>
+                    <Text style={styles.description}>
+                        {activeService.description}
+                    </Text>
+                    <Text style={styles.timerText}>
+                        Time remaining: {countdown} seconds
+                    </Text>
+                </Card.Content>
+                <Card.Actions>
+                    <Button
+                        mode="contained"
+                        onPress={() => acceptService(activeService.service_id)}
+                        style={styles.acceptButton}
+                    >
+                        Accept
+                    </Button>
+                </Card.Actions>
+            </Card>
+        );
+    };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Assigned Services</Text>
-            {services.length === 0 ? (
-                <Text style={styles.noServicesText}>No services available.</Text>
-            ) : (
-                <FlatList
-                    data={services}
-                    keyExtractor={(item) => item.service_id.toString()}
-                    renderItem={renderService}
-                />
-            )}
+            {renderActiveService()}
         </View>
     );
 };
@@ -72,6 +73,12 @@ const styles = StyleSheet.create({
     },
     description: {
         fontSize: 16,
+    },
+    timerText: {
+        marginTop: 8,
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#d32f2f'
     },
     acceptButton: {
         backgroundColor: '#1E88E5',
